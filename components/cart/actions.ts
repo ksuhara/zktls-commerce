@@ -1,10 +1,18 @@
 'use server';
 
 import { TAGS } from 'lib/constants';
-import { addToCart, createCart, getCart, removeFromCart, updateCart } from 'lib/shopify';
+import {
+  addToCart,
+  createCart,
+  getCart,
+  removeFromCart,
+  updateCart,
+  updateDiscounts
+} from 'lib/shopify';
 import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 
 export async function addItem(prevState: any, selectedVariantId: string | undefined) {
   let cartId = (await cookies()).get('cartId')?.value;
@@ -115,4 +123,70 @@ export async function redirectToCheckout() {
 export async function createCartAndSetCookie() {
   let cart = await createCart();
   (await cookies()).set('cartId', cart.id!);
+}
+
+export async function applyDiscount(prevState: any, formData: FormData) {
+  //console.log ("Form Data", formData)
+  const cartId = (await cookies()).get('cartId')?.value;
+
+  if (!cartId) {
+    return 'Missing cart ID';
+  }
+  const schema = z.object({
+    discountCode: z.string().min(1)
+  });
+  const parse = schema.safeParse({
+    discountCode: formData.get('discountCode')
+  });
+
+  if (!parse.success) {
+    return 'Error applying discount. Discount code required.';
+  }
+
+  const data = parse.data;
+  let discountCodes = []; // Create a new empty array - actually this array should be the current array of discount codes, but as we only allow one code now, we create an empty array
+  discountCodes.push(data.discountCode); // Push the string into the array
+  // Ensure the discount codes are unique - this is not really necessary now, because we are only using one code
+  const uniqueCodes = discountCodes.filter((value, index, array) => {
+    return array.indexOf(value) === index;
+  });
+
+  try {
+    await updateDiscounts(cartId, uniqueCodes);
+    //close cart and have tooltip for c
+    revalidateTag(TAGS.cart);
+  } catch (e) {
+    return 'Error applying discount';
+  }
+}
+
+export async function removeDiscount(
+  prevState: any,
+  payload: {
+    discount: string;
+    discounts: string[];
+  }
+) {
+  //console.log ("payload", payload)
+  const cartId = (await cookies()).get('cartId')?.value;
+
+  if (!cartId) {
+    return 'Missing cart ID';
+  }
+  const code = payload?.discount;
+  const codes = payload?.discounts ?? []; //the entire array of discounts
+  if (!code) {
+    return 'Error removing discount. Discount code required.';
+  }
+  let discountCodes = codes;
+  //remove the code from the array and return the array
+  let newCodes = discountCodes.filter((item) => item !== code);
+
+  try {
+    await updateDiscounts(cartId, newCodes);
+    //close cart and have tooltip for c
+    revalidateTag(TAGS.cart);
+  } catch (e) {
+    return 'Error applying discount';
+  }
 }

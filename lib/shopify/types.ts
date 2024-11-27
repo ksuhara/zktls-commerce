@@ -270,3 +270,15 @@ export type ShopifyProductsOperation = {
     sortKey?: string;
   };
 };
+
+export type ShopifyDiscountCartOperation = {
+  data: {
+    cartDiscountCodesUpdate: {
+      cart: ShopifyCart;
+    };
+  };
+  variables: {
+    cartId: string;
+    discountCodes: string[];
+  };
+};

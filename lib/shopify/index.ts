@@ -6,6 +6,7 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   addToCartMutation,
+  CART_DISCOUNT_CODE_UPDATE_MUTATION,
   createCartMutation,
   editCartItemsMutation,
   removeFromCartMutation
@@ -39,6 +40,7 @@ import {
   ShopifyCollectionProductsOperation,
   ShopifyCollectionsOperation,
   ShopifyCreateCartOperation,
+  ShopifyDiscountCartOperation,
   ShopifyMenuOperation,
   ShopifyPageOperation,
   ShopifyPagesOperation,
@@ -452,4 +454,16 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
   }
 
   return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
+}
+
+export async function updateDiscounts(cartId: string, discounts: string[]): Promise<Cart> {
+  const res = await shopifyFetch<ShopifyDiscountCartOperation>({
+    query: CART_DISCOUNT_CODE_UPDATE_MUTATION,
+    variables: {
+      cartId,
+      discountCodes: discounts
+    },
+    cache: 'no-store'
+  });
+  return reshapeCart(res.body.data.cartDiscountCodesUpdate.cart);
 }
