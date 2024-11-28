@@ -133,6 +133,10 @@ export type ShopifyProduct = {
   seo: SEO;
   tags: string[];
   updatedAt: string;
+  metafield: {
+    key: string;
+    value: string;
+  };
 };
 
 export type ShopifyCartOperation = {
@@ -280,5 +284,12 @@ export type ShopifyDiscountCartOperation = {
   variables: {
     cartId: string;
     discountCodes: string[];
+  };
+};
+
+export type ExtendedProduct = Product & {
+  metafield?: {
+    key: string;
+    value: string;
   };
 };

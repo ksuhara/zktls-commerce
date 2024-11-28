@@ -47,6 +47,10 @@ export const getCollectionProductsQuery = /* GraphQL */ `
         edges {
           node {
             ...product
+            metafield(namespace: "custom", key: "reclaim_provider_id") {
+              key
+              value
+            }
           }
         }
       }
