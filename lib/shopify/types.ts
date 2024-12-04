@@ -133,8 +133,10 @@ export type ShopifyProduct = {
   seo: SEO;
   tags: string[];
   updatedAt: string;
-  metafield: {
-    key: string;
+  reclaim: {
+    value: string;
+  };
+  zkPass: {
     value: string;
   };
 };
