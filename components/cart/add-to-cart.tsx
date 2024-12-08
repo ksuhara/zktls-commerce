@@ -97,7 +97,10 @@ export function AddToCart({ product }: { product: Product }) {
   const [proof, setProof] = useState<Proof | null>(null);
   const [isProofVerified, setIsProofVerified] = useState(false);
 
-  const appId = 'e23d62ff-adf8-4ed6-9447-381d4dcffae8';
+  const appId =
+    process.env.NODE_ENV == 'development'
+      ? 'e23d62ff-adf8-4ed6-9447-381d4dcffae8'
+      : '1d583577-54fb-457e-b9a5-9410763f2e8e';
   const schemaId = product.zkPass?.value;
 
   const getVerificationReq = async () => {
