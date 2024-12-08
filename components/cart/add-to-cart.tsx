@@ -231,7 +231,7 @@ export function AddToCart({ product }: { product: Product }) {
         <>
           {product.zkPass && !isProofVerified ? (
             <>
-              <p>For those who present a proof with zkPass can only purchase this item.</p>
+              <p>For those who submit a proof with zkPass can only purchase this item.</p>
 
               <button
                 onClick={requestVerifyMessage}
