@@ -231,11 +231,11 @@ export function AddToCart({ product }: { product: Product }) {
         <>
           {product.zkPass && !isProofVerified ? (
             <>
-              <p>zkPassで証明を提出した人のみが購入できます</p>
+              <p>For those who present a proof with zkPass can only purchase this item.</p>
 
               <button
                 onClick={requestVerifyMessage}
-                className="mb-4 w-full rounded bg-purple-500 px-4 py-2 text-white transition-colors hover:bg-purple-600"
+                className="mb-4 mt-2 w-full rounded bg-lime-400 px-4 py-2 transition-colors hover:bg-lime-500"
               >
                 zkPass
               </button>
